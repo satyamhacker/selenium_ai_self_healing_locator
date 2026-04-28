@@ -36,7 +36,7 @@ class LocalLLMClient:
             return ""
         
 
-    def build_healing_prompt(locator_type: str, locator_value: str, page_source: str) -> str:
+    def build_healing_prompt(self, locator_type: str, locator_value: str, page_source: str) -> str:
                 """
                 AI ke liye strict JSON prompt banata hai taaki hallucination na ho.
                 """
