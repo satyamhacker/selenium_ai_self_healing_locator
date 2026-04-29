@@ -27,7 +27,9 @@ class WebDriverExtensions:
             
             import json, re
             ai_response = llm.call_local_ai(prompt)
-            # Strip markdown code fences if model wraps response
+            if not ai_response:
+                print("❌ AI returned empty response. Raising original exception.")
+                raise e
             clean = re.sub(r"```(?:json)?\s*|\s*```", "", ai_response).strip()
             suggestions = json.loads(clean)
             print(f"🤖 AI Suggestions: {suggestions}")

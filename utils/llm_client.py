@@ -23,7 +23,7 @@ class LocalLLMClient:
                 "prompt": prompt,
                 "stream": False
             }
-            response = requests.post(self.base_url, json=payload, timeout=60)
+            response = requests.post(self.base_url, json=payload, timeout=120)
 
             # Raise error if request failed
             response.raise_for_status()
