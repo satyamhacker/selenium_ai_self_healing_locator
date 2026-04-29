@@ -8,7 +8,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 
 class WebDriverExtensions:
     @staticmethod
-    def AIfind_element_sync(driver, locator_type: str, locator_value: str, timeout: int = 10):
+    async def AIfind_element(driver, locator_type: str, locator_value: str, timeout: int = 10):
         try:
             # 🔹 Happy Path: locator_type is already a By string (e.g. "css selector", "id")
             element = driver.find_element(locator_type, locator_value)
@@ -16,8 +16,7 @@ class WebDriverExtensions:
             return element
             
         except NoSuchElementException as e:
-            print(f"⚠️ Primary FAILED: {locator_type}='{locator_value}'")
-            print("🔍 Extracting DOM snippet...")
+            print(f"Locator jeopardized. Healing...")
             
             page_snippet = driver.page_source[:3000]
             

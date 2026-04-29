@@ -1,4 +1,4 @@
-# pages/sauce_login_page.py (Current - Classical)
+import asyncio
 from selenium.webdriver.common.by import By
 from utils.webdriver_extensions import WebDriverExtensions
 
@@ -10,7 +10,7 @@ class LoginPage:
         self.login_btn = (By.ID, "login-button")
     
     def _find(self, locator):
-        return WebDriverExtensions.AIfind_element_sync(self.driver, locator[0], locator[1])
+        return asyncio.run(WebDriverExtensions.AIfind_element(self.driver, locator[0], locator[1]))
 
     def enter_username(self, text):
         self._find(self.username).send_keys(text)
