@@ -1,0 +1,8 @@
+{
+    "mcpServers": {
+        "github.com/executeautomation/mcp-playwright": {
+            "url": "http://localhost:8931/mcp",
+            "type": "http"
+        }
+    }
+}
