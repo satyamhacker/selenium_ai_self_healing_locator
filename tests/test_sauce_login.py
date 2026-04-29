@@ -11,4 +11,7 @@ def driver():
 def test_valid_login(driver):
     driver.get("https://www.saucedemo.com/")
     page = LoginPage(driver)    
-    
+    page.enter_username("standard_user")
+    page.enter_password("secret_sauce")
+    page.click_login()
+    assert "inventory.html" in driver.current_url
