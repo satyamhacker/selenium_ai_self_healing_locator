@@ -36,30 +36,21 @@ class LocalLLMClient:
             return ""
         
 
-    def build_healing_prompt(self, locator_type: str, locator_value: str, page_source: str) -> str:
-                """
-                AI ke liye strict JSON prompt banata hai taaki hallucination na ho.
-                """
-                return f"""
-            You are an expert Selenium locator healer. 
-            Given a broken locator, suggest alternative valid locators for the same element.
+    def build_healing_prompt(self, locator_type: str, locator_value: str, page_source: str, driver=None) -> str:
+        if driver:
+            dom_snippet = driver.execute_script("""
+                const form = document.querySelector('form') || document.body;
+                return form.innerHTML.substring(0, 800);
+            """)
+        else:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(page_source, "html.parser")
+            form = soup.find("form") or soup.find("body")
+            dom_snippet = str(form)[:800] if form else page_source[:800]
 
-            Broken Locator Type: {locator_type}
-            Broken Locator Value: {locator_value}
-
-            Current DOM Context (snippet):
-            {page_source[:3000]}  # First 3000 chars to avoid token overflow
-
-            RULES:
-            1. Return ONLY valid JSON format. No markdown, no explanations.
-            2. Use double quotes strictly for keys and values.
-            3. Provide at least 2 alternative strategies if possible.
-
-            Expected JSON Schema:
-            {{
-                "alternatives": [
-                    {{"strategy": "ID", "value": "new-id-here", "confidence": 95}},
-                    {{"strategy": "XPATH", "value": "//input[@data-test='username']", "confidence": 85}}
-                ]
-            }}
-            """.strip()
+        return f"""You are a Selenium locator healer. A locator failed. Suggest alternatives.
+Broken: type={locator_type}, value={locator_value}
+DOM:
+{dom_snippet}
+Return ONLY this JSON, no explanation:
+{{"alternatives":[{{"strategy":"ID","value":"...","confidence":90}},{{"strategy":"XPATH","value":"...","confidence":80}}]}}"""

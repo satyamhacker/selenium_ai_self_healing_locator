@@ -23,7 +23,7 @@ class WebDriverExtensions:
             
             from utils.llm_client import LocalLLMClient
             llm = LocalLLMClient()
-            prompt = llm.build_healing_prompt(locator_type, locator_value, page_snippet)
+            prompt = llm.build_healing_prompt(locator_type, locator_value, page_snippet, driver=driver)
             
             import json, re
             ai_response = llm.call_local_ai(prompt)
