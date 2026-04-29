@@ -5,3 +5,4 @@ pages/__pycache__/sauce_login_page.cpython-313.pyc
 tests/__pycache__/test_sauce_login.cpython-313-pytest-9.0.3.pyc
 utils/__pycache__/webdriver_extensions.cpython-313.pyc
 utils/__pycache__/webdriver_factory.cpython-313.pyc
+utils/__pycache__/llm_client.cpython-313.pyc

@@ -10,45 +10,47 @@ class WebDriverExtensions:
     @staticmethod
     def AIfind_element_sync(driver, locator_type: str, locator_value: str, timeout: int = 10):
         try:
-            # 🔹 Happy Path: Standard Selenium call
-            strategy = getattr(By, locator_type.upper(), None)
-            element = driver.find_element(strategy, locator_value)
+            # 🔹 Happy Path: locator_type is already a By string (e.g. "css selector", "id")
+            element = driver.find_element(locator_type, locator_value)
             print(f"✅ Primary: {locator_type}='{locator_value}'")
             return element
             
         except NoSuchElementException as e:
-            # 🔹 🔥 YAHAN SE AI HEALING SHURU HOTI HAI 🔥
             print(f"⚠️ Primary FAILED: {locator_type}='{locator_value}'")
             print("🔍 Extracting DOM snippet...")
             
-            # Step 1: DOM snapshot lo (sirf 3000 chars)
             page_snippet = driver.page_source[:3000]
             
-            # Step 2: Prompt banayo (utils/llm_client.py se import)
             from utils.llm_client import LocalLLMClient
             llm = LocalLLMClient()
             prompt = llm.build_healing_prompt(locator_type, locator_value, page_snippet)
             
-            # Step 3: 🤖 AI CALL YAHAN HO RAHA HAI 🤖
-            from utils.llm_client import LocalLLMClient
-            llm = LocalLLMClient()
-            ai_response = llm.call_local_ai(prompt)  # ← HTTP POST to Ollama
-            
-            # Step 4: JSON parse karo
-            import json
-            suggestions = json.loads(ai_response)
+            import json, re
+            ai_response = llm.call_local_ai(prompt)
+            # Strip markdown code fences if model wraps response
+            clean = re.sub(r"```(?:json)?\s*|\s*```", "", ai_response).strip()
+            suggestions = json.loads(clean)
             print(f"🤖 AI Suggestions: {suggestions}")
             
-            # Step 5: Retry loop (pehla successful locator return karo)
-            for strat_key in ["ID", "XPATH", "CSS_SELECTOR"]:
-                if strat_key in suggestions:
-                    new_strategy = getattr(By, strat_key)
-                    new_value = suggestions[strat_key]
-                    print(f"🔄 Retrying with {strat_key}='{new_value}'")
-                    try:
-                        return driver.find_element(new_strategy, new_value)
-                    except:
-                        continue  # Agar yeh bhi fail hua, next strategy try karo
+            # Handle both {"alternatives": [...]} and flat {"ID": ..., "XPATH": ...} formats
+            alternatives = suggestions.get("alternatives", [])
+            if not alternatives:
+                alternatives = [
+                    {"strategy": k, "value": v}
+                    for k, v in suggestions.items()
+                    if k in ("ID", "XPATH", "CSS_SELECTOR")
+                ]
             
-            # Sab strategies fail → Original error raise karo
+            for alt in alternatives:
+                strategy_key = alt.get("strategy", "").upper()
+                new_value = alt.get("value", "")
+                new_strategy = getattr(By, strategy_key, None)
+                if not new_strategy or not new_value:
+                    continue
+                print(f"🔄 Retrying with {strategy_key}='{new_value}'")
+                try:
+                    return driver.find_element(new_strategy, new_value)
+                except:
+                    continue
+            
             raise e

@@ -9,11 +9,14 @@ class LoginPage:
         self.password_field = (By.ID, "password")
         self.login_btn = (By.ID, "login-button")
     
+    def _find(self, locator):
+        return WebDriverExtensions.AIfind_element_sync(self.driver, locator[0], locator[1])
+
     def enter_username(self, text):
-        WebDriverExtensions.AIfind_element_sync(self.driver, self.username[0].name, self.username[1]).send_keys(text)
+        self._find(self.username).send_keys(text)
     
     def enter_password(self, text):
-        WebDriverExtensions.AIfind_element_sync(self.driver, self.password_field[0].name, self.password_field[1]).send_keys(text)
+        self._find(self.password_field).send_keys(text)
     
     def click_login(self):
-        WebDriverExtensions.AIfind_element_sync(self.driver, self.login_btn[0].name, self.login_btn[1]).click()
+        self._find(self.login_btn).click()
