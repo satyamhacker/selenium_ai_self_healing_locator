@@ -1,0 +1,7 @@
+.drivers/147.0.7727.137/chromedriver.exe
+.drivers/147.0.7727.137/chromedriver-win64/LICENSE.chromedriver
+.drivers/147.0.7727.137/chromedriver-win64/THIRD_PARTY_NOTICES.chromedriver
+pages/__pycache__/sauce_login_page.cpython-313.pyc
+tests/__pycache__/test_sauce_login.cpython-313-pytest-9.0.3.pyc
+utils/__pycache__/webdriver_extensions.cpython-313.pyc
+utils/__pycache__/webdriver_factory.cpython-313.pyc
