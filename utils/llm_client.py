@@ -22,7 +22,7 @@ class LocalLLMClient:
             return ""
 
     # ---------- new ----------
-    def build_healing_prompt(self, locator_type: str, locator_value: str,
+    def build_healing_prompt_and_locator(self, locator_type: str, locator_value: str,
                              page_source: str, driver=None) -> str:
         """
         Builds a concise prompt for the LLM.
