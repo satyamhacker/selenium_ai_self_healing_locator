@@ -8,14 +8,14 @@ load_dotenv()
 
 class LocalLLMClient:
     def __init__(self):
-        self.base_url = os.getenv("LOCAL_LLM_BASE_URL", "http://localhost:11434")
+        self.base_url = os.getenv("LOCAL_LLM_BASE_URL", "http://localhost:11434/api/generate")
         self.model_name = os.getenv("LOCAL_LLM_MODEL_NAME", "mistral:7b")
 
     # ---------- existing ----------
     def call_local_ai(self, prompt: str) -> str:
         payload = {"model": self.model_name, "prompt": prompt, "stream": False}
         try:
-            resp = requests.post(f"{self.base_url}/api/generate", json=payload, timeout=120)
+            resp = requests.post(f"{self.base_url}", json=payload, timeout=120)
             resp.raise_for_status()
             return resp.json().get("response", "").strip()
         except Exception:
